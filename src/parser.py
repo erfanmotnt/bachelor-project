@@ -6,6 +6,12 @@ parser.add_argument('--dataset',
 					type=str, 
 					required=True,
                     help="dataset from ['synthetic', 'SMD']")
+
+parser.add_argument('--seed', 
+					type=int, 
+					required=True,
+                    help="random seed")
+
 parser.add_argument('--entity', 
 					type=str, 
 					required=True,

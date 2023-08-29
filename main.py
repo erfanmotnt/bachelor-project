@@ -187,7 +187,7 @@ def train_model(model_args, trainD, trainO, testO, labels):
 	elif model.name in 'DGHL':
 		from src.dghl.experiment import train_DGHL
 		from src.dghl.utils import basic_mc
-		mc = basic_mc(trainO.shape[1], random_seed=1)
+		mc = basic_mc(trainO.shape[1], random_seed=args.seed)
 		root_dir = f'./dghlresults/DGHL-nomask-smdlabels/{args.dataset}'
 		os.makedirs(name=root_dir, exist_ok=True)
 		train_data = np.array(trainO[:, None, :])
@@ -212,7 +212,12 @@ def train_model(model_args, trainD, trainO, testO, labels):
 
 if __name__ == '__main__':
 	train_loader, test_loader, labels = load_dataset(args.dataset, args.entity)
-	
+	import torch
+	import random
+	import numpy as np
+	torch.manual_seed(args.seed)
+	random.seed(args.seed)
+	np.random.seed(args.seed)
 	model, model_args = load_custom_model(args.model, labels.shape[1])
 
 	## Prepare data
@@ -243,7 +248,7 @@ if __name__ == '__main__':
 	print(f'{color.HEADER}Result {args.model} on {args.dataset}{color.ENDC}')
 	labelsFinal = (np.sum(labels, axis=1) >= 1) + 0
 	result = roc_auc_score(labelsFinal, lossFinal)
-	with open(f'results/{model.name} {args.dataset} {args.entity}.pkl', 'wb') as handle:
+	with open(f'results{args.seed}/{model.name} {args.dataset} {args.entity}.pkl', 'wb') as handle:
 		pickle.dump({'roc-auc': result, 'scores': lossFinal},
 	       handle, protocol=pickle.HIGHEST_PROTOCOL)
 
